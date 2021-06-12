@@ -1,5 +1,7 @@
 import logging
 import random
+
+import requests
 from aiogram import Bot, Dispatcher, executor, types
 
 from filters import IsAdminFilter
@@ -33,8 +35,22 @@ kasima = [
 victimID = [
     '1'
 ]
-ppmoderAdd = ['1']
 
+kassaEuro = ['1']
+euroFinder = ['€']
+euroNoSymbol = ['0']
+euroN = [0]
+profits = [0]
+recordEuro = [2108]
+
+
+ppmoderAdd = ['Палки в процессе добавления! Ожидайте админов.']
+channelPost = ['1']
+
+publish_post_markup = types.InlineKeyboardMarkup()
+topublish = types.InlineKeyboardButton('Опубликовать пост✅', callback_data='topublish')
+tonopublish = types.InlineKeyboardButton('Удалить🚫', callback_data='tonopublish')
+publish_post_markup.add(topublish, tonopublish)
 
 markup_inline_choice = types.InlineKeyboardMarkup()
 addPP = types.InlineKeyboardButton('Добавить PP', callback_data='add')
@@ -96,18 +112,53 @@ async def personal(message: types.Message):
 @dp.message_handler(regexp='❗️')
 async def personal(message: types.Message):
     if message.from_user.id == 1892827220:
-        toolID[2] = message.text
-        print(toolID[2])
+        recordEuro[0] = message.text
+        print(recordEuro[0])
         await message.delete()
-
 
 @dp.message_handler()
 async def kassa(message: types.Message):
+    if message.chat.type == types.ChatType.PRIVATE:
+        if message.from_user.username == 'blackebayer':
+            channelPost[0] = message.text
+
+            words = message.text.split()
+            for word in words:
+                for x in euroFinder:
+                    if word.count(x):
+                        print('Yep. "%s" contains characters from "%s" item.' % (word, x))
+                        kassaEuro[0] = word
+                        print(kassaEuro[0])
+                        euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
+                        print(euroNoSymbol[0])
+    if message.chat.type == types.ChatType.PRIVATE:
+        if message.from_user.id == 1892827220:
+            channelPost[0] = message.text
+
+            words = message.text.split()
+            for word in words:
+                for x in euroFinder:
+                    if word.count(x):
+                        print('Yep. "%s" contains characters from "%s" item.' % (word, x))
+                        kassaEuro[0] = word
+                        print(kassaEuro[0])
+                        euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
+                        print(euroNoSymbol[0])
+
+            await message.delete()
+
+            if channelPost != '1':
+                await message.answer(channelPost[0], reply_markup=publish_post_markup)
+
     if 'касса' in message.text:
+        print(message.chat.id)
+        euroN[0] += int(euroNoSymbol[0])
+        if int(euroN[0]) > int(recordEuro[0]):
+            recordEuro[0] = int(euroN[0])
         await message.answer('🍀Статистика за сегодня:🍀\n'
-                             '🐘Профитов: '+toolID[0]+'\n'
-                             '💸На сумму: '+toolID[1]+'\n'
-                             '❗️Рекорд: '+toolID[2]+'\n')
+                             '🐘Профитов: '+str(profits[0])+'🐘\n'
+                             '💸На сумму: '+str(euroN[0])+'€💸\n'
+                             '❗️Рекорд: '+str(recordEuro[0])+'€❗️\n')
 
     if 'заряду' in message.text:
         await message.answer_sticker('CAACAgIAAxkBAAECaFBgwSqxwBgXUxDQwb6P0GcO3sTkygACRQADZtYKO1dsr_MdF_EUHwQ')
@@ -143,7 +194,27 @@ async def self(callback_query: types.CallbackQuery):
                               text='🍀Палки сохранены!🍀\n'
                                    '       /available_pp',reply_markup=None)
 
-#if message.chat.type != types.ChatType.PRIVATE:
+
+@dp.callback_query_handler(lambda c: c.data == 'topublish')
+async def self(callback_query: types.CallbackQuery):
+    await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id,
+                              text='🍀Пост успешно опубликован!🍀',reply_markup=None)
+
+    requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
+        chat_id=-1001443483878, text=channelPost[0]))
+
+    requests.get('https://api.telegram.org/bot{}/sendMessage'.format(TOKEN), params=dict(
+        chat_id=-1001375668801, text='⚡️NEW PROFIT⚡️\n'
+                             '💸На сумму: '+str(euroNoSymbol[0])+'€💸\n'
+                             'Дополнительная информация\n'
+                             'в канале выплат!'))
+    profits[0] += 1
+
+
+@dp.callback_query_handler(lambda c: c.data == 'tonopublish')
+async def self(callback_query: types.CallbackQuery):
+    await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id,
+                              text='🚫Пост успешно удален!🚫',reply_markup=None)
 
 
 if __name__ == '__main__':
