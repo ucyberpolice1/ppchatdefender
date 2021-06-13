@@ -131,6 +131,8 @@ async def kassa(message: types.Message):
                         print(kassaEuro[0])
                         euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
                         print(euroNoSymbol[0])
+                        profits[0] += 1
+
     if message.chat.type == types.ChatType.PRIVATE:
         if message.from_user.id == 1892827220:
             channelPost[0] = message.text
@@ -144,6 +146,7 @@ async def kassa(message: types.Message):
                         print(kassaEuro[0])
                         euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
                         print(euroNoSymbol[0])
+                        profits[0] += 1
 
             await message.delete()
 
@@ -159,6 +162,7 @@ async def kassa(message: types.Message):
                              '🐘Профитов: '+str(profits[0])+'🐘\n'
                              '💸На сумму: '+str(euroN[0])+'€💸\n'
                              '❗️Рекорд: '+str(recordEuro[0])+'€❗️\n')
+        euroN[0] = 0
 
     if 'заряду' in message.text:
         await message.answer_sticker('CAACAgIAAxkBAAECaFBgwSqxwBgXUxDQwb6P0GcO3sTkygACRQADZtYKO1dsr_MdF_EUHwQ')
@@ -208,7 +212,6 @@ async def self(callback_query: types.CallbackQuery):
                              '💸На сумму: '+str(euroNoSymbol[0])+'€💸\n'
                              'Дополнительная информация\n'
                              'в канале выплат!'))
-    profits[0] += 1
 
 
 @dp.callback_query_handler(lambda c: c.data == 'tonopublish')
