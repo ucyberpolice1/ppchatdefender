@@ -42,6 +42,8 @@ euroNoSymbol = ['0']
 euroN = [0]
 profits = [0]
 recordEuro = [2108]
+euroResult = [0]
+euroKassa = [0]
 
 
 ppmoderAdd = ['Палки в процессе добавления! Ожидайте админов.']
@@ -131,7 +133,12 @@ async def kassa(message: types.Message):
                         print(kassaEuro[0])
                         euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
                         print(euroNoSymbol[0])
-                        profits[0] += 1
+
+                        euroResult[0] = euroN[0] + int(euroNoSymbol[0])
+                        euroKassa[0] += int(euroResult[0])
+
+                        if int(euroN[0]) > int(recordEuro[0]):
+                            recordEuro[0] = int(euroN[0])
 
     if message.chat.type == types.ChatType.PRIVATE:
         if message.from_user.id == 1892827220:
@@ -146,7 +153,12 @@ async def kassa(message: types.Message):
                         print(kassaEuro[0])
                         euroNoSymbol[0] = int(kassaEuro[0].replace('€',''))
                         print(euroNoSymbol[0])
-                        profits[0] += 1
+
+                        euroResult[0] = euroN[0] + int(euroNoSymbol[0])
+                        euroKassa[0] += int(euroResult[0])
+
+                        if int(euroKassa[0]) > int(recordEuro[0]):
+                            recordEuro[0] = int(euroKassa[0])
 
             await message.delete()
 
@@ -154,15 +166,10 @@ async def kassa(message: types.Message):
                 await message.answer(channelPost[0], reply_markup=publish_post_markup)
 
     if 'касса' in message.text:
-        print(message.chat.id)
-        euroN[0] += int(euroNoSymbol[0])
-        if int(euroN[0]) > int(recordEuro[0]):
-            recordEuro[0] = int(euroN[0])
         await message.answer('🍀Статистика за сегодня:🍀\n'
                              '🐘Профитов: '+str(profits[0])+'🐘\n'
-                             '💸На сумму: '+str(euroN[0])+'€💸\n'
+                             '💸На сумму: '+str(euroKassa[0])+'€💸\n'
                              '❗️Рекорд: '+str(recordEuro[0])+'€❗️\n')
-        euroN[0] = 0
 
     if 'заряду' in message.text:
         await message.answer_sticker('CAACAgIAAxkBAAECaFBgwSqxwBgXUxDQwb6P0GcO3sTkygACRQADZtYKO1dsr_MdF_EUHwQ')
@@ -212,6 +219,7 @@ async def self(callback_query: types.CallbackQuery):
                              '💸На сумму: '+str(euroNoSymbol[0])+'€💸\n'
                              'Дополнительная информация\n'
                              'в канале выплат!'))
+    profits[0] += 1
 
 
 @dp.callback_query_handler(lambda c: c.data == 'tonopublish')
